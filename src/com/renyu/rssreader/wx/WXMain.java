@@ -31,7 +31,6 @@ public class WXMain {
                 "沪江技术学院",
                 "KotlinThree",
                 "Android科技前沿",
-                "Android开发666",
                 "Android编程精选",
                 "移动开发前线",
                 "安卓笔记侠",

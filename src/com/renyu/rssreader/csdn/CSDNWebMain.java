@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
  * Created by Administrator on 2017/7/5.
  */
 public class CSDNWebMain {
-
     public static void main(String[] args) {
         ExecutorService uploadService= Executors.newFixedThreadPool(1);
 
