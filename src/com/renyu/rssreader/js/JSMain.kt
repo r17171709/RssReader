@@ -62,7 +62,7 @@ fun main(args: Array<String>) {
             }
         }
         println("完成")
-    }, 2, 40*60, TimeUnit.SECONDS)
+    }, 2, 60*60, TimeUnit.SECONDS)
 }
 
 fun checkExists(bean: WXBean.ListBean) : Boolean {
