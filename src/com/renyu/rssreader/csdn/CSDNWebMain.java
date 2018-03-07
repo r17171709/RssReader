@@ -54,6 +54,6 @@ public class CSDNWebMain {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }, 2, 90*60, TimeUnit.SECONDS);
+        }, 2, 60*60, TimeUnit.SECONDS);
     }
 }

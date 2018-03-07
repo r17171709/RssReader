@@ -17,47 +17,41 @@ import java.util.concurrent.TimeUnit;
  * Created by Administrator on 2017/6/27.
  */
 public class WXMain {
-
     // 当前加载的公众号信息
     static int current=0;
 
     public static void main(String[] args) {
-
         String[] names={
-                "鸿洋",
-                "郭霖",
-                "APP架构师",
-                "KotlinX",
-                "沪江技术学院",
-                "KotlinThree",
-                "Android科技前沿",
-                "Android编程精选",
-                "移动开发前线",
-                "安卓笔记侠",
-                "Android开发中文站",
-                "何俊林",
+                "沪江技术",
+                "clock_life",
+                "刘望舒",
                 "终端研发部",
-                "吴小龙同学",
-//                "手机淘宝技术团队MTT",
-                "WeMobileDev",
-//                "技术实验室",
+                "淘宝技术",
                 "非著名程序员",
                 "Android技术之家",
                 "QQ空间开发团队",
-                "优雅的程序员",
-                "HenCoder",
-                "技术视界",
+                "何俊林",
                 "Android群英传",
                 "Android程序员",
-//                "Android面试专栏",
                 "开发者技术前线",
                 "刘桂林",
                 "code小生",
-                "Android进阶之旅",
+                "伯特说",
                 "KotlinX",
-                "Android程序员",
                 "码个蛋",
-                "ASCE1885"
+                "安卓干货铺",
+                "鸿洋",
+                "Android编程精选",
+                "androidtrending",
+                "郭霖",
+                "APP架构师",
+                "安卓开发精选",
+                "杨守乐",
+                "移动开发前线",
+                "安卓笔记侠",
+                "Android开发中文站",
+                "DailyQueation",
+                "HenCoder"
         };
 
         ExecutorService uploadService= Executors.newFixedThreadPool(1);
@@ -108,7 +102,7 @@ public class WXMain {
                     }
                 }
             }
-        }, 2, 60*20, TimeUnit.SECONDS);
+        }, 2, 60, TimeUnit.SECONDS);
     }
 
     private static boolean checkExists(WXBean.ListBean bean) {

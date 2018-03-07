@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 fun main(args: Array<String>) {
 
-    val urlList: Array<String> = arrayOf("d1591c322c89", "5139d555c94d", "58b4c20abf2f", "3fde3b545a35", "ddfd0f9bb992", "38d96caffb2f", "7d70f1739deb", "d79a6385bded", "35da7ac56db8")
+    val urlList: Array<String> = arrayOf("d1591c322c89", "5139d555c94d", "58b4c20abf2f", "3fde3b545a35", "ddfd0f9bb992", "38d96caffb2f", "7d70f1739deb", "d79a6385bded", "35da7ac56db8", "98aaef9f5d2f")
 
     val uploadService = Executors.newFixedThreadPool(1)
 
@@ -63,7 +63,20 @@ fun main(args: Array<String>) {
         }
         println("完成")
     }, 2, 60*60, TimeUnit.SECONDS)
+
+//    checkExists2()
 }
+
+//fun checkExists2() {
+//    val head = HashMap<String, String>()
+//    head.put("X-Bmob-Application-Id", "43199c324d3bcb01bacdbd0914277ef0")
+//    head.put("X-Bmob-REST-API-Key", "d4ac4f967651b0a0053a9d3c45c3efa8")
+//
+//    val params = "bql=select * from JianShu where title = 'Android - 网络请求之 Retrofit2 + RxJava'"
+//    val uploadResult= HttpUtils.getIntance().get("https://api.bmob.cn/1/cloudQuery?"+params, head)
+//
+//    println(uploadResult)
+//}
 
 fun checkExists(bean: WXBean.ListBean) : Boolean {
     val head = HashMap<String, String>()
