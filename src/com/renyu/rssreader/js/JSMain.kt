@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
             var textUrls: MutableList<String> = MutableList(0) {""}
             var titles: MutableList<String> = MutableList(0) {""}
 
-            val newUrl = "http://www.jianshu.com/c/"+url
+            val newUrl = "http://www.jianshu.com/c/$url"
             val doc: Document = Jsoup.connect(newUrl).get()
             val note_list_element: Elements = doc.getElementsByClass("note-list")
             val note_list_document: Document = Jsoup.parse(note_list_element.toString())

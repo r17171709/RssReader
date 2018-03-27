@@ -10,7 +10,7 @@ public class GitCheckMain {
     public static void main(String[] args) {
         int index = 2000;
         ExecutorService executors = Executors.newSingleThreadExecutor();
-        File file=new File("E:\\github");
+        File file=new File("D:\\github");
         File[] listFiles=file.listFiles();
         int lastValue = index+400;
         if (lastValue>listFiles.length) {
@@ -25,7 +25,7 @@ public class GitCheckMain {
                     System.out.println(path);
                     Runtime runtime=Runtime.getRuntime();
                     try {
-                        runtime.exec("cmd /k E: && cd "+path+" && git pull");
+                        runtime.exec("cmd /k D: && cd "+path+" && git pull");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

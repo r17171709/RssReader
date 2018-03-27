@@ -22,9 +22,15 @@ public class WXMain {
 
     public static void main(String[] args) {
         String[] names={
+                "架构师必备",
+                "前端之巅",
+                "安卓笔记侠",
+                "Android开发中文站",
+                "DailyQueation",
+                "HenCoder",
                 "沪江技术",
-                "clock_life",
                 "刘望舒",
+                "clock_life",
                 "终端研发部",
                 "淘宝技术",
                 "非著名程序员",
@@ -44,14 +50,8 @@ public class WXMain {
                 "Android编程精选",
                 "androidtrending",
                 "郭霖",
-                "APP架构师",
                 "安卓开发精选",
-                "杨守乐",
-                "移动开发前线",
-                "安卓笔记侠",
-                "Android开发中文站",
-                "DailyQueation",
-                "HenCoder"
+                "杨守乐"
         };
 
         ExecutorService uploadService= Executors.newFixedThreadPool(1);
