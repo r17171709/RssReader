@@ -14,8 +14,6 @@ fun main(args: Array<String>) {
 
     val urlList: Array<String> = arrayOf("d1591c322c89", "5139d555c94d", "58b4c20abf2f", "3fde3b545a35", "ddfd0f9bb992", "38d96caffb2f", "7d70f1739deb", "d79a6385bded", "35da7ac56db8", "98aaef9f5d2f")
 
-    val uploadService = Executors.newFixedThreadPool(1)
-
     val scheduledExecutorService = Executors.newScheduledThreadPool(1)
     scheduledExecutorService.scheduleAtFixedRate({
         println("开始")
@@ -54,10 +52,8 @@ fun main(args: Array<String>) {
                 listBean.app_msg_ext_info.author = names[i]
                 listBean.app_msg_ext_info.source_url = textUrls[i]
                 listBean.app_msg_ext_info.cover = avatars[i]
-                uploadService.execute {
-                    if (!checkExists(listBean)) {
-                        update(listBean)
-                    }
+                if (!checkExists(listBean)) {
+                    update(listBean)
                 }
             }
         }
@@ -96,6 +92,7 @@ fun checkExists(bean: WXBean.ListBean) : Boolean {
             isExists=true
         }
     }
+    Thread.sleep(2000)
     return isExists
 }
 
@@ -110,4 +107,5 @@ fun update(bean: WXBean.ListBean) {
     jsonObject.put("author", bean.app_msg_ext_info.author)
     val uploadResult: String? = HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/JianShu", head, jsonObject.toString())
     println(uploadResult)
+    Thread.sleep(2000)
 }

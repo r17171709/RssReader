@@ -1,13 +1,16 @@
 package com.renyu.rssreader.csdn;
 
 import com.renyu.rssreader.bean.RSSBean;
+import com.renyu.rssreader.utils.HttpUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,8 +20,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class CSDNWebMain {
     public static void main(String[] args) {
-        ExecutorService uploadService= Executors.newFixedThreadPool(1);
-
         ScheduledExecutorService scheduledExecutorService= Executors.newScheduledThreadPool(1);
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             String url="http://blog.csdn.net/mobile/newarticle.html";
@@ -41,19 +42,72 @@ public class CSDNWebMain {
                     String title = tracking_ad_doc.getElementsByTag("a").text();
                     String url_ =tracking_ad_doc.getElementsByTag("a").attr("href");
                     RSSBean bean=new RSSBean(title, url_);
-                    uploadService.execute(() -> {
-                        RSSMain main=new RSSMain();
-                        if (!main.checkExists(bean)) {
-                            main.update(bean);
-                        }
-//                            if (!main.checkExistsLeanCloud(bean)) {
-//                                main.updateLeanCloud(bean);
-//                            }
-                    });
+                    CSDNWebMain main=new CSDNWebMain();
+                    if (!main.checkExists(bean)) {
+                        main.update(bean);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }, 2, 60*60, TimeUnit.SECONDS);
+    }
+
+    public boolean checkExists(RSSBean bean) {
+        HashMap<String, String> head=new HashMap<>();
+        head.put("X-Bmob-Application-Id", "43199c324d3bcb01bacdbd0914277ef0");
+        head.put("X-Bmob-REST-API-Key", "d4ac4f967651b0a0053a9d3c45c3efa8");
+
+        JSONObject object=new JSONObject();
+        try {
+            object.put("link", bean.getLink());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String value=HttpUtils.getIntance().get("https://api.bmob.cn/1/classes/Rss?where="+object.toString(), head);
+        boolean isExists=false;
+        try {
+            if (value==null) {
+                isExists=true;
+            }
+            else {
+                JSONObject jsonObject=new JSONObject(value);
+                if (jsonObject.getJSONArray("results").length()>0) {
+                    isExists=true;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return isExists;
+    }
+
+    public void update(RSSBean bean) {
+        HashMap<String, String> head=new HashMap<>();
+        head.put("X-Bmob-Application-Id", "43199c324d3bcb01bacdbd0914277ef0");
+        head.put("X-Bmob-REST-API-Key", "d4ac4f967651b0a0053a9d3c45c3efa8");
+
+        JSONObject object=new JSONObject();
+        try {
+            object.put("title", bean.getTile());
+            object.put("link", bean.getLink());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (!object.toString().equals("")) {
+            String uploadResult=HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/Rss", head, object.toString());
+            System.out.println(uploadResult);
+        }
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
