@@ -22,36 +22,39 @@ public class WXMain {
 
     public static void main(String[] args) {
         String[] names={
-                "架构师必备",
-                "前端之巅",
-                "安卓笔记侠",
-                "Android开发中文站",
-                "DailyQueation",
-                "HenCoder",
-                "沪江技术",
-                "刘望舒",
-                "clock_life",
-                "终端研发部",
-                "淘宝技术",
-                "非著名程序员",
-                "Android技术之家",
-                "QQ空间开发团队",
+                "互扯程序",
+                "non-famous-coder",
+//                "QQ空间开发团队",
                 "何俊林",
-                "Android群英传",
-                "Android程序员",
+//                "Android群英传",
                 "开发者技术前线",
                 "刘桂林",
                 "code小生",
                 "伯特说",
                 "KotlinX",
                 "码个蛋",
-                "安卓干货铺",
+                "秦子帅",
                 "鸿洋",
-                "Android编程精选",
-                "androidtrending",
                 "郭霖",
                 "安卓开发精选",
-                "杨守乐"
+                "Android编程精选",
+                "玉刚说",
+                "编码美丽",
+                "程序员小乐",
+                "架构师必备",
+//                "HenCoder",
+                "clock_life",
+//                "Android程序员",
+                "androidtrending",
+                "前端之巅",
+                "安卓笔记侠",
+                "Android开发中文站",
+                "DailyQueation",
+                "沪江技术",
+                "刘望舒",
+                "终端研发部",
+                "Android技术之家",
+                "淘宝技术"
         };
 
         ExecutorService uploadService= Executors.newFixedThreadPool(1);
@@ -102,7 +105,7 @@ public class WXMain {
                     }
                 }
             }
-        }, 2, 60, TimeUnit.SECONDS);
+        }, 2, 180, TimeUnit.SECONDS);
     }
 
     private static boolean checkExists(WXBean.ListBean bean) {
@@ -118,6 +121,12 @@ public class WXMain {
         }
 
         String value=HttpUtils.getIntance().get("https://api.bmob.cn/1/classes/WX?where="+object.toString(), head);
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         boolean isExists=false;
         try {
             if (value==null) {
@@ -151,6 +160,11 @@ public class WXMain {
         }
         if (!object.toString().equals("")) {
             String uploadResult=HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/WX", head, object.toString());
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             System.out.println(uploadResult);
         }
     }

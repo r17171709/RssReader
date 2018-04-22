@@ -30,7 +30,7 @@ public class HttpUtils {
 
     private HttpUtils() {
         OkHttpClient.Builder builder=new OkHttpClient.Builder();
-        builder.connectTimeout(20, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).writeTimeout(20, TimeUnit.SECONDS);
+        builder.connectTimeout(20, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS);
         HttpsUtils.SSLParams sslParams=HttpsUtils.getSslSocketFactory(null, null, null);
         builder.hostnameVerifier((s, sslSession) -> true).sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager);
         client=builder.build();
