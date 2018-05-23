@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit
 
 fun main(args: Array<String>) {
 
-    // "d79a6385bded"  "35da7ac56db8"
-    val urlList: Array<String> = arrayOf("d1591c322c89", "5139d555c94d", "58b4c20abf2f", "3fde3b545a35", "ddfd0f9bb992", "38d96caffb2f", "7d70f1739deb", "98aaef9f5d2f", "0dc880a2c73c", "383594e9265f")
+    //  "38d96caffb2f"  "7d70f1739deb"  "98aaef9f5d2f"
+    val urlList: Array<String> = arrayOf("3fde3b545a35", "NEt52a", "58b4c20abf2f", "d1591c322c89", "5139d555c94d", "ddfd0f9bb992", "0dc880a2c73c", "383594e9265f")
 
     val scheduledExecutorService = Executors.newScheduledThreadPool(1)
     scheduledExecutorService.scheduleAtFixedRate({
@@ -33,9 +33,9 @@ fun main(args: Array<String>) {
                 val author_document: Document = Jsoup.parse(element.toString())
                 val avatar: String = "http:"+author_document.getElementsByTag("img").attr("src")
                 avatars.add(avatar)
-                val blue_link_element: Elements = author_document.getElementsByClass("blue-link")
-                val blue_link_document: Document = Jsoup.parse(blue_link_element.toString())
-                val name = (blue_link_document.childNodes()[0] as Element).text()
+                val nickname_element: Elements = author_document.getElementsByClass("nickname")
+                val nickname_document: Document = Jsoup.parse(nickname_element.toString())
+                val name = (nickname_document.childNodes()[0] as Element).text()
                 names.add(name)
             }
             val title_element: Elements = note_list_document.getElementsByClass("title")
