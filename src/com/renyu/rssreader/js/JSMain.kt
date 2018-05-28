@@ -28,22 +28,14 @@ fun main(args: Array<String>) {
             val doc: Document = Jsoup.connect(newUrl).get()
             val note_list_element: Elements = doc.getElementsByClass("note-list")
             val note_list_document: Document = Jsoup.parse(note_list_element.toString())
-            val author_element: Elements = note_list_document.getElementsByClass("author")
-            for (element in author_element) {
-                val author_document: Document = Jsoup.parse(element.toString())
-                val avatar: String = "http:"+author_document.getElementsByTag("img").attr("src")
-                avatars.add(avatar)
-                val nickname_element: Elements = author_document.getElementsByClass("nickname")
-                val nickname_document: Document = Jsoup.parse(nickname_element.toString())
-                val name = (nickname_document.childNodes()[0] as Element).text()
-                names.add(name)
-            }
-            val title_element: Elements = note_list_document.getElementsByClass("title")
-            for (element in title_element) {
+            val content_element: Elements = note_list_document.getElementsByClass("content")
+            for (element in content_element) {
                 val title_document: Document = Jsoup.parse(element.toString())
-                val textUrl = "http://www.jianshu.com"+title_document.getElementsByTag("a").attr("href")
+                val name = title_document.getElementsByClass("nickname").text()
+                names.add(name)
+                val textUrl = "http://www.jianshu.com"+title_document.getElementsByClass("title").attr("href")
                 textUrls.add(textUrl)
-                val title = (title_document.childNodes()[0] as Element).text()
+                val title = title_document.getElementsByClass("title").text()
                 titles.add(title)
             }
             for (i in 0..9) {
@@ -52,7 +44,6 @@ fun main(args: Array<String>) {
                 listBean.app_msg_ext_info.title = titles[i]
                 listBean.app_msg_ext_info.author = names[i]
                 listBean.app_msg_ext_info.source_url = textUrls[i]
-                listBean.app_msg_ext_info.cover = avatars[i]
                 if (!checkExists(listBean)) {
                     update(listBean)
                 }
@@ -104,7 +95,6 @@ fun update(bean: WXBean.ListBean) {
     val jsonObject = JSONObject()
     jsonObject.put("title", bean.app_msg_ext_info.title)
     jsonObject.put("link", bean.app_msg_ext_info.source_url )
-    jsonObject.put("cover", bean.app_msg_ext_info.cover)
     jsonObject.put("author", bean.app_msg_ext_info.author)
     val uploadResult: String? = HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/JianShu", head, jsonObject.toString())
     println(uploadResult)
