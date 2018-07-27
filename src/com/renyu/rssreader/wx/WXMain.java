@@ -1,14 +1,13 @@
 package com.renyu.rssreader.wx;
 
 import com.google.gson.Gson;
+import com.renyu.house.params.Params;
 import com.renyu.rssreader.bean.WXBean;
 import com.renyu.rssreader.utils.HttpUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -18,50 +17,45 @@ import java.util.concurrent.TimeUnit;
  */
 public class WXMain {
     // 当前加载的公众号信息
-    static int current=0;
+    private static int current=0;
 
     public static void main(String[] args) {
         String[] names={
+//                "clock_life",
+//                "androidtrending",
+//                "QQ空间开发团队",
+//                "刘桂林",
+//                "伯特说",
+//                "架构师必备",
+//                "HenCoder",
+                "Android群英传",
+                "non-famous-coder",
+                "何俊林",
+                "开发者技术前线",
+                "code小生",
+                "KotlinX",
+                "秦子帅",
                 "郭霖",
                 "安卓开发精选",
                 "Android编程精选",
                 "玉刚说",
-                "编码美丽",
+                "鸿洋",
                 "程序员小乐",
-                "架构师必备",
-//                "HenCoder",
-//                "clock_life",
-//                "Android程序员",
-                "androidtrending",
+                "编码美丽",
                 "前端之巅",
                 "安卓笔记侠",
-                "Android开发中文站",
                 "DailyQueation",
-                "沪江技术",
+                "AndroidChinaNet",
                 "刘望舒",
                 "终端研发部",
                 "码个蛋",
                 "Android技术之家",
-                "淘宝技术",
                 "互扯程序",
-                "Android群英传",
-                "non-famous-coder",
-//                "QQ空间开发团队",
-                "何俊林",
-                "开发者技术前线",
-//                "刘桂林",
-                "code小生",
-                "伯特说",
-                "KotlinX",
-                "秦子帅",
-                "鸿洋"
+                "JANiubility"
         };
-
-        ExecutorService uploadService= Executors.newFixedThreadPool(1);
 
         ScheduledExecutorService scheduledExecutorService= Executors.newScheduledThreadPool(1);
         scheduledExecutorService.scheduleAtFixedRate(() -> {
-
             // 找到当前需要加载的公众号站点名称
             String searchUrl="http://weixin.sogou.com/weixin?type=1&s_from=input&query="+names[current]+"&ie=utf8&_sug_=n&_sug_type_=";
             if (current==names.length-1) {
@@ -97,11 +91,9 @@ public class WXMain {
                     List<WXBean.ListBean> beans= bean.getList();
                     System.out.println("获取到"+beans.size()+"条数据");
                     for (WXBean.ListBean listBean : beans) {
-                        uploadService.execute(() -> {
-                            if (!checkExists(listBean)) {
-                                update(listBean);
-                            }
-                        });
+                        if (!checkExists(listBean)) {
+                            update(listBean);
+                        }
                     }
                 }
             }
@@ -109,24 +101,18 @@ public class WXMain {
     }
 
     private static boolean checkExists(WXBean.ListBean bean) {
-        HashMap<String, String> head=new HashMap<>();
-        head.put("X-Bmob-Application-Id", "43199c324d3bcb01bacdbd0914277ef0");
-        head.put("X-Bmob-REST-API-Key", "d4ac4f967651b0a0053a9d3c45c3efa8");
-
         JSONObject object=new JSONObject();
         try {
             object.put("title", bean.getApp_msg_ext_info().getTitle());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        String value=HttpUtils.getIntance().get("https://api.bmob.cn/1/classes/WX?where="+object.toString(), head);
+        String value=HttpUtils.getIntance().get("https://api.bmob.cn/1/classes/WX?where="+object.toString(), Params.head());
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         boolean isExists=false;
         try {
             if (value==null) {
@@ -145,10 +131,6 @@ public class WXMain {
     }
 
     private static void update(WXBean.ListBean bean) {
-        HashMap<String, String> head=new HashMap<>();
-        head.put("X-Bmob-Application-Id", "43199c324d3bcb01bacdbd0914277ef0");
-        head.put("X-Bmob-REST-API-Key", "d4ac4f967651b0a0053a9d3c45c3efa8");
-
         JSONObject object=new JSONObject();
         try {
             object.put("title", bean.getApp_msg_ext_info().getTitle());
@@ -159,7 +141,7 @@ public class WXMain {
             e.printStackTrace();
         }
         if (!object.toString().equals("")) {
-            String uploadResult=HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/WX", head, object.toString());
+            String uploadResult=HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/WX", Params.head(), object.toString());
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {

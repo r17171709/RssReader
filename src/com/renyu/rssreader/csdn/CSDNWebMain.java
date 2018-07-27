@@ -1,5 +1,6 @@
 package com.renyu.rssreader.csdn;
 
+import com.renyu.house.params.Params;
 import com.renyu.rssreader.bean.RSSBean;
 import com.renyu.rssreader.utils.HttpUtils;
 import org.json.JSONException;
@@ -10,19 +11,18 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Administrator on 2017/7/5.
  */
 public class CSDNWebMain {
     public static void main(String[] args) {
-        ScheduledExecutorService scheduledExecutorService= Executors.newScheduledThreadPool(1);
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
-            String url="http://blog.csdn.net/mobile/newarticle.html";
+        int page = 0;
+
+        outer:
+        while (true) {
+            page++;
+            String url="http://blog.csdn.net/mobile/newarticle.html?page="+page;
             try {
                 Document doc = Jsoup.connect(url).get();
                 Elements elements=doc.getElementsByClass("blog_home_main");
@@ -37,6 +37,13 @@ public class CSDNWebMain {
 
                 for (Element blog_list_element : blog_list_elements) {
                     Document blog_list_doc = Jsoup.parse(blog_list_element.toString());
+
+                    String time = blog_list_doc.getElementsByClass("blog_list_b_r fr").text();
+                    if (time.contains("前天")) {
+                        // 目标博客已经统计完成
+                        break outer;
+                    }
+
                     Elements tracking_ad_elements=blog_list_doc.getElementsByClass("csdn-tracking-statistics");
                     Document tracking_ad_doc = Jsoup.parse(tracking_ad_elements.toString());
                     String title = tracking_ad_doc.getElementsByTag("a").text();
@@ -50,14 +57,10 @@ public class CSDNWebMain {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }, 2, 60*60, TimeUnit.SECONDS);
+        }
     }
 
-    public boolean checkExists(RSSBean bean) {
-        HashMap<String, String> head=new HashMap<>();
-        head.put("X-Bmob-Application-Id", "43199c324d3bcb01bacdbd0914277ef0");
-        head.put("X-Bmob-REST-API-Key", "d4ac4f967651b0a0053a9d3c45c3efa8");
-
+    private boolean checkExists(RSSBean bean) {
         JSONObject object=new JSONObject();
         try {
             object.put("link", bean.getLink());
@@ -65,7 +68,7 @@ public class CSDNWebMain {
             e.printStackTrace();
         }
 
-        String value=HttpUtils.getIntance().get("https://api.bmob.cn/1/classes/Rss?where="+object.toString(), head);
+        String value=HttpUtils.getIntance().get("https://api.bmob.cn/1/classes/Rss?where="+object.toString(), Params.head());
         boolean isExists=false;
         try {
             if (value==null) {
@@ -88,11 +91,7 @@ public class CSDNWebMain {
         return isExists;
     }
 
-    public void update(RSSBean bean) {
-        HashMap<String, String> head=new HashMap<>();
-        head.put("X-Bmob-Application-Id", "43199c324d3bcb01bacdbd0914277ef0");
-        head.put("X-Bmob-REST-API-Key", "d4ac4f967651b0a0053a9d3c45c3efa8");
-
+    private void update(RSSBean bean) {
         JSONObject object=new JSONObject();
         try {
             object.put("title", bean.getTile());
@@ -101,7 +100,7 @@ public class CSDNWebMain {
             e.printStackTrace();
         }
         if (!object.toString().equals("")) {
-            String uploadResult=HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/Rss", head, object.toString());
+            String uploadResult=HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/Rss", Params.head(), object.toString());
             System.out.println(uploadResult);
         }
         try {
