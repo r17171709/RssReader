@@ -1,4 +1,4 @@
-package com.renyu.house.params
+package com.renyu.rssreader.params
 
 import java.util.HashMap
 
@@ -10,4 +10,7 @@ object Params {
         head["X-Bmob-REST-API-Key"] = "a2dbed09c1f79a8344d36cb21429d1e0"
         return head
     }
+
+    @JvmStatic
+    val baseUrl = "https://api2.bmob.cn/1/"
 }

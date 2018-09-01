@@ -1,6 +1,6 @@
 package com.renyu.rssreader.csdn;
 
-import com.renyu.house.params.Params;
+import com.renyu.rssreader.params.Params;
 import com.renyu.rssreader.bean.RSSBean;
 import com.renyu.rssreader.utils.HttpUtils;
 import org.json.JSONException;
@@ -68,7 +68,7 @@ public class CSDNWebMain {
             e.printStackTrace();
         }
 
-        String value=HttpUtils.getIntance().get("https://api.bmob.cn/1/classes/Rss?where="+object.toString(), Params.head());
+        String value=HttpUtils.getIntance().get(Params.getBaseUrl() + "classes/Rss?where="+object.toString(), Params.head());
         boolean isExists=false;
         try {
             if (value==null) {
@@ -100,7 +100,7 @@ public class CSDNWebMain {
             e.printStackTrace();
         }
         if (!object.toString().equals("")) {
-            String uploadResult=HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/Rss", Params.head(), object.toString());
+            String uploadResult=HttpUtils.getIntance().post(Params.getBaseUrl() + "classes/Rss", Params.head(), object.toString());
             System.out.println(uploadResult);
         }
         try {

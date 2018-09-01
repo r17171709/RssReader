@@ -1,7 +1,7 @@
 package com.renyu.rssreader.wx;
 
 import com.google.gson.Gson;
-import com.renyu.house.params.Params;
+import com.renyu.rssreader.params.Params;
 import com.renyu.rssreader.bean.WXBean;
 import com.renyu.rssreader.utils.HttpUtils;
 import org.json.JSONException;
@@ -28,14 +28,6 @@ public class WXMain {
 //                "伯特说",
 //                "架构师必备",
 //                "HenCoder",
-                "Android群英传",
-                "non-famous-coder",
-                "何俊林",
-                "开发者技术前线",
-                "code小生",
-                "KotlinX",
-                "秦子帅",
-                "郭霖",
                 "安卓开发精选",
                 "Android编程精选",
                 "玉刚说",
@@ -51,7 +43,15 @@ public class WXMain {
                 "码个蛋",
                 "Android技术之家",
                 "互扯程序",
-                "JANiubility"
+                "JANiubility",
+                "Android群英传",
+                "non-famous-coder",
+                "何俊林",
+                "开发者技术前线",
+                "code小生",
+                "KotlinX",
+                "秦子帅",
+                "郭霖"
         };
 
         ScheduledExecutorService scheduledExecutorService= Executors.newScheduledThreadPool(1);
@@ -107,7 +107,7 @@ public class WXMain {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String value=HttpUtils.getIntance().get("https://api.bmob.cn/1/classes/WX?where="+object.toString(), Params.head());
+        String value=HttpUtils.getIntance().get(Params.getBaseUrl() + "classes/WX?where="+object.toString(), Params.head());
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
@@ -141,7 +141,7 @@ public class WXMain {
             e.printStackTrace();
         }
         if (!object.toString().equals("")) {
-            String uploadResult=HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/WX", Params.head(), object.toString());
+            String uploadResult=HttpUtils.getIntance().post(Params.getBaseUrl() + "classes/WX", Params.head(), object.toString());
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {

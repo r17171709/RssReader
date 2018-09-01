@@ -1,6 +1,6 @@
 package com.renyu.rssreader.js
 
-import com.renyu.house.params.Params
+import com.renyu.rssreader.params.Params
 import com.renyu.rssreader.bean.WXBean
 import com.renyu.rssreader.utils.HttpUtils
 import org.json.JSONObject
@@ -68,7 +68,7 @@ fun main(args: Array<String>) {
 private fun checkExists(bean: WXBean.ListBean) : Boolean {
     val jsonObject = JSONObject()
     jsonObject.put("title", bean.app_msg_ext_info.title)
-    val value = HttpUtils.getIntance().get("https://api.bmob.cn/1/classes/JianShu?where="+jsonObject.toString(), Params.head())
+    val value = HttpUtils.getIntance().get(Params.baseUrl + "classes/JianShu?where="+jsonObject.toString(), Params.head())
     var isExists=false
     if (value==null) {
         isExists=true
@@ -88,7 +88,7 @@ private fun update(bean: WXBean.ListBean) {
     jsonObject.put("title", bean.app_msg_ext_info.title)
     jsonObject.put("link", bean.app_msg_ext_info.source_url )
     jsonObject.put("author", bean.app_msg_ext_info.author)
-    val uploadResult: String? = HttpUtils.getIntance().post("https://api.bmob.cn/1/classes/JianShu", Params.head(), jsonObject.toString())
+    val uploadResult: String? = HttpUtils.getIntance().post(Params.baseUrl + "classes/JianShu", Params.head(), jsonObject.toString())
     println(uploadResult)
     Thread.sleep(2000)
 }

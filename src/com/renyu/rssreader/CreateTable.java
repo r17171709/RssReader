@@ -1,5 +1,6 @@
 package com.renyu.rssreader;
 
+import com.renyu.rssreader.params.Params;
 import com.renyu.rssreader.utils.HttpUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +19,7 @@ public class CreateTable {
             head.put("X-Bmob-Application-Id", "43199c324d3bcb01bacdbd0914277ef0");
             head.put("X-Bmob-Master-Key", "fe674c0175e0522360ac03bab0d5e6d9");
 
-            String callback=HttpUtils.getIntance().post("https://api.bmob.cn/1/schemas/HomeLinkHouse", head, json);
+            String callback=HttpUtils.getIntance().post(Params.getBaseUrl() + "schemas/HomeLinkHouse", head, json);
             System.out.println(callback);
         }
 
