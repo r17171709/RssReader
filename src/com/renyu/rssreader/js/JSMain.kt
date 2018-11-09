@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 fun main(args: Array<String>) {
 
     //      "98aaef9f5d2f"  "3fde3b545a35"
-    val urlList: Array<String> = arrayOf("38d96caffb2f", "7d70f1739deb", "NEt52a", "58b4c20abf2f", "d1591c322c89", "5139d555c94d", "ddfd0f9bb992", "0dc880a2c73c", "383594e9265f")
+    val urlList: Array<String> = arrayOf("0659acfdce32","ebc9d2e84214", "38d96caffb2f", "7d70f1739deb", "NEt52a", "58b4c20abf2f", "d1591c322c89", "5139d555c94d", "ddfd0f9bb992", "0dc880a2c73c", "383594e9265f")
 
     val scheduledExecutorService = Executors.newScheduledThreadPool(1)
     scheduledExecutorService.scheduleAtFixedRate({
