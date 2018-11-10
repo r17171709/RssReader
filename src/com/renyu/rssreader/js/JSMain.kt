@@ -1,29 +1,25 @@
 package com.renyu.rssreader.js
 
-import com.renyu.rssreader.params.Params
+import com.renyu.commonlibrary.network.OKHttpHelper
 import com.renyu.rssreader.bean.WXBean
-import com.renyu.rssreader.utils.HttpUtils
+import com.renyu.rssreader.params.Params
 import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
+
+const val regEx = "[`~☆★!@#$%^&*()+=|{}':;,\\[\\]》·.<>/?~！@#￥%……（）——+|{}【】‘；：”“’。，、？]"
 
 fun main(args: Array<String>) {
-
-    //      "98aaef9f5d2f"  "3fde3b545a35"
     val urlList: Array<String> = arrayOf("0659acfdce32","ebc9d2e84214", "38d96caffb2f", "7d70f1739deb", "NEt52a", "58b4c20abf2f", "d1591c322c89", "5139d555c94d", "ddfd0f9bb992", "0dc880a2c73c", "383594e9265f")
 
-    val scheduledExecutorService = Executors.newScheduledThreadPool(1)
-    scheduledExecutorService.scheduleAtFixedRate({
-        println("开始")
-        for (url in urlList) {
-            val names: MutableList<String> = MutableList(0) {""}
-            val textUrls: MutableList<String> = MutableList(0) {""}
-            val titles: MutableList<String> = MutableList(0) {""}
+    for (url in urlList) {
+        val names: MutableList<String> = MutableList(0) {""}
+        val textUrls: MutableList<String> = MutableList(0) {""}
+        val titles: MutableList<String> = MutableList(0) {""}
 
-            val newUrl = "http://www.jianshu.com/c/$url"
+        for (i in 1 until 4) {
+            val newUrl = "http://www.jianshu.com/c/$url?order_by=added_at&page=$i"
             val doc: Document = Jsoup.connect(newUrl).get()
             val note_list_element: Elements = doc.getElementsByClass("note-list")
             val note_list_document: Document = Jsoup.parse(note_list_element.toString())
@@ -43,13 +39,13 @@ fun main(args: Array<String>) {
                 listBean.app_msg_ext_info.title = titles[i]
                 listBean.app_msg_ext_info.author = names[i]
                 listBean.app_msg_ext_info.source_url = textUrls[i]
+                println(titles[i])
                 if (!checkExists(listBean)) {
                     update(listBean)
                 }
             }
         }
-        println("完成")
-    }, 2, 60*60, TimeUnit.SECONDS)
+    }
 
 //    checkExists2()
 }
@@ -66,9 +62,10 @@ fun main(args: Array<String>) {
 //}
 
 private fun checkExists(bean: WXBean.ListBean) : Boolean {
+    val okHttpHelper = OKHttpHelper.getInstance()
     val jsonObject = JSONObject()
-    jsonObject.put("title", bean.app_msg_ext_info.title)
-    val value = HttpUtils.getIntance().get(Params.baseUrl + "classes/JianShu?where="+jsonObject.toString(), Params.head())
+    jsonObject.put("temp", bean.app_msg_ext_info.title.replace(Regex(regEx),""))
+    val value = okHttpHelper.okHttpUtils.syncGet(Params.baseUrl + "classes/JianShu?where="+jsonObject.toString(), Params.head()).body().string()
     var isExists=false
     if (value==null) {
         isExists=true
@@ -79,16 +76,15 @@ private fun checkExists(bean: WXBean.ListBean) : Boolean {
             isExists=true
         }
     }
-    Thread.sleep(2000)
     return isExists
 }
 
 private fun update(bean: WXBean.ListBean) {
+    val okHttpHelper = OKHttpHelper.getInstance()
     val jsonObject = JSONObject()
     jsonObject.put("title", bean.app_msg_ext_info.title)
+    jsonObject.put("temp", bean.app_msg_ext_info.title.replace(Regex(regEx),""))
     jsonObject.put("link", bean.app_msg_ext_info.source_url )
     jsonObject.put("author", bean.app_msg_ext_info.author)
-    val uploadResult: String? = HttpUtils.getIntance().post(Params.baseUrl + "classes/JianShu", Params.head(), jsonObject.toString())
-    println(uploadResult)
-    Thread.sleep(2000)
+    okHttpHelper.okHttpUtils.asyncPostJson(Params.baseUrl + "classes/JianShu", jsonObject.toString(), Params.head())
 }

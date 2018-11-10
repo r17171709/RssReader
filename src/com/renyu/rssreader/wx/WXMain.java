@@ -1,12 +1,13 @@
 package com.renyu.rssreader.wx;
 
 import com.google.gson.Gson;
+import com.renyu.commonlibrary.network.OKHttpHelper;
 import com.renyu.rssreader.params.Params;
 import com.renyu.rssreader.bean.WXBean;
-import com.renyu.rssreader.utils.HttpUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,6 +21,7 @@ public class WXMain {
     private static int current=0;
 
     public static void main(String[] args) {
+        OKHttpHelper okHttpHelper = OKHttpHelper.getInstance();
         String[] names={
 //                "clock_life",
 //                "androidtrending",
@@ -68,69 +70,81 @@ public class WXMain {
             // 查找公众号地址
             String startSearchinfo="uigs=\"account_image_0\" href=\"";
             String endSearchinfo="\"><span>";
-            String searchValue=HttpUtils.getIntance().get(searchUrl, null);
-            if (searchValue.contains(startSearchinfo)) {
-                searchValue=searchValue.substring(searchValue.indexOf(startSearchinfo)+startSearchinfo.length());
-                if (searchValue.contains(endSearchinfo)) {
-                    searchValue=searchValue.substring(0, searchValue.indexOf(endSearchinfo));
-                }
-            }
-            if (!searchValue.equals("")) {
-                searchValue=searchValue.replace("amp;", "");
-                String value= HttpUtils.getIntance().get(searchValue, null);
-                if (value!=null) {
-                    int start=value.indexOf("{\"list\":[");
-                    int end=value.indexOf("]};");
-                    if (start==-1 || end==-1) {
-                        System.out.println("请网页访问输入验证码");
-                        return;
+            String searchValue;
+            try {
+                searchValue = okHttpHelper.getOkHttpUtils().syncGet(searchUrl, null).body().string();
+                if (searchValue.contains(startSearchinfo)) {
+                    searchValue=searchValue.substring(searchValue.indexOf(startSearchinfo)+startSearchinfo.length());
+                    if (searchValue.contains(endSearchinfo)) {
+                        searchValue=searchValue.substring(0, searchValue.indexOf(endSearchinfo));
                     }
-                    value=value.substring(start, end+2);
-                    Gson gson=new Gson();
-                    WXBean bean=gson.fromJson(value, WXBean.class);
-                    List<WXBean.ListBean> beans= bean.getList();
-                    System.out.println("获取到"+beans.size()+"条数据");
-                    for (WXBean.ListBean listBean : beans) {
-                        if (!checkExists(listBean)) {
-                            update(listBean);
+                }
+                if (!searchValue.equals("")) {
+                    searchValue=searchValue.replace("amp;", "");
+                    String value= okHttpHelper.getOkHttpUtils().syncGet(searchValue, null).body().string();
+                    if (value!=null) {
+                        int start=value.indexOf("{\"list\":[");
+                        int end=value.indexOf("]};");
+                        if (start==-1 || end==-1) {
+                            System.out.println("请网页访问输入验证码");
+                            return;
+                        }
+                        value=value.substring(start, end+2);
+                        Gson gson=new Gson();
+                        WXBean bean=gson.fromJson(value, WXBean.class);
+                        List<WXBean.ListBean> beans= bean.getList();
+                        System.out.println("获取到"+beans.size()+"条数据");
+                        for (WXBean.ListBean listBean : beans) {
+                            if (!checkExists(listBean)) {
+                                update(listBean);
+                            }
                         }
                     }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }, 2, 180, TimeUnit.SECONDS);
     }
 
     private static boolean checkExists(WXBean.ListBean bean) {
+        OKHttpHelper okHttpHelper = OKHttpHelper.getInstance();
         JSONObject object=new JSONObject();
         try {
             object.put("title", bean.getApp_msg_ext_info().getTitle());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String value=HttpUtils.getIntance().get(Params.getBaseUrl() + "classes/WX?where="+object.toString(), Params.head());
         try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        boolean isExists=false;
-        try {
-            if (value==null) {
-                isExists=true;
+            String value = okHttpHelper.getOkHttpUtils().syncGet(Params.getBaseUrl() + "classes/WX?where="+object.toString(), Params.head()).body().string();
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            else {
-                JSONObject jsonObject=new JSONObject(value);
-                if (jsonObject.getJSONArray("results").length()>0) {
+            boolean isExists=false;
+            try {
+                if (value==null) {
                     isExists=true;
                 }
+                else {
+                    JSONObject jsonObject=new JSONObject(value);
+                    if (jsonObject.getJSONArray("results").length()>0) {
+                        isExists=true;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
+            return isExists;
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return isExists;
+        return false;
     }
 
     private static void update(WXBean.ListBean bean) {
+        OKHttpHelper okHttpHelper = OKHttpHelper.getInstance();
         JSONObject object=new JSONObject();
         try {
             object.put("title", bean.getApp_msg_ext_info().getTitle());
@@ -141,13 +155,18 @@ public class WXMain {
             e.printStackTrace();
         }
         if (!object.toString().equals("")) {
-            String uploadResult=HttpUtils.getIntance().post(Params.getBaseUrl() + "classes/WX", Params.head(), object.toString());
+            String uploadResult;
             try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
+                uploadResult = okHttpHelper.getOkHttpUtils().syncPostJson(Params.getBaseUrl() + "classes/WX", object.toString(), Params.head()).body().string();
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(uploadResult);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println(uploadResult);
         }
     }
 }
