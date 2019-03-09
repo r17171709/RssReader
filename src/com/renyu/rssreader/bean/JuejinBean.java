@@ -116,7 +116,6 @@ public class JuejinBean {
             private boolean hot;
             private String updatedAt;
             private String originalUrl;
-            private String verifyCreatedAt;
             private String createdAt;
             private UserBean user;
             private String author;
@@ -252,14 +251,6 @@ public class JuejinBean {
 
             public void setOriginalUrl(String originalUrl) {
                 this.originalUrl = originalUrl;
-            }
-
-            public String getVerifyCreatedAt() {
-                return verifyCreatedAt;
-            }
-
-            public void setVerifyCreatedAt(String verifyCreatedAt) {
-                this.verifyCreatedAt = verifyCreatedAt;
             }
 
             public String getCreatedAt() {

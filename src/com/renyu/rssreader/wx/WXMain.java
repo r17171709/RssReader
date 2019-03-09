@@ -2,44 +2,21 @@ package com.renyu.rssreader.wx;
 
 import com.google.gson.Gson;
 import com.renyu.commonlibrary.network.OKHttpHelper;
-import com.renyu.rssreader.params.Params;
 import com.renyu.rssreader.bean.WXBean;
+import com.renyu.rssreader.params.Params;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Administrator on 2017/6/27.
  */
 public class WXMain {
-    // 当前加载的公众号信息
-    private static int current=0;
-
     public static void main(String[] args) {
         OKHttpHelper okHttpHelper = OKHttpHelper.getInstance();
         String[] names={
-//                "clock_life",
-//                "androidtrending",
-//                "QQ空间开发团队",
-//                "刘桂林",
-//                "伯特说",
-//                "架构师必备",
-//                "HenCoder",
-                "码个蛋",
-                "Android技术之家",
-                "互扯程序",
-                "JANiubility",
-                "Android群英传",
-                "non-famous-coder",
-                "何俊林",
-                "开发者技术前线",
-                "code小生",
-                "KotlinX",
                 "秦子帅",
                 "郭霖",
                 "安卓开发精选",
@@ -47,26 +24,26 @@ public class WXMain {
                 "玉刚说",
                 "鸿洋",
                 "程序员小乐",
-                "编码美丽",
                 "前端之巅",
-                "安卓笔记侠",
+                "编码美丽",
                 "DailyQueation",
                 "AndroidChinaNet",
                 "终端研发部",
                 "刘望舒",
+                "码个蛋",
+                "Android技术之家",
+                "互扯程序",
+                "JANiubility",
+                "non-famous-coder",
+                "何俊林",
+                "开发者技术前线",
+                "code小生",
+                "KotlinX"
         };
 
-        ScheduledExecutorService scheduledExecutorService= Executors.newScheduledThreadPool(1);
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
+        for (String name : names) {
             // 找到当前需要加载的公众号站点名称
-            String searchUrl="http://weixin.sogou.com/weixin?type=1&s_from=input&query="+names[current]+"&ie=utf8&_sug_=n&_sug_type_=";
-            if (current==names.length-1) {
-                current=0;
-            }
-            else {
-                current++;
-            }
-
+            String searchUrl="http://weixin.sogou.com/weixin?type=1&s_from=input&query="+name+"&ie=utf8&_sug_=n&_sug_type_=";
             // 查找公众号地址
             String startSearchinfo="uigs=\"account_image_0\" href=\"";
             String endSearchinfo="\"><span>";
@@ -104,7 +81,7 @@ public class WXMain {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }, 2, 180, TimeUnit.SECONDS);
+        }
     }
 
     private static boolean checkExists(WXBean.ListBean bean) {
@@ -117,28 +94,19 @@ public class WXMain {
         }
         try {
             String value = okHttpHelper.getOkHttpUtils().syncGet(Params.getBaseUrl() + "classes/WX?where="+object.toString(), Params.head()).body().string();
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             boolean isExists=false;
-            try {
-                if (value==null) {
+            if (value==null) {
+                isExists=true;
+            }
+            else {
+                JSONObject jsonObject=new JSONObject(value);
+                if (jsonObject.getJSONArray("results").length()>0) {
                     isExists=true;
                 }
-                else {
-                    JSONObject jsonObject=new JSONObject(value);
-                    if (jsonObject.getJSONArray("results").length()>0) {
-                        isExists=true;
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
             return isExists;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+
         }
         return false;
     }
@@ -158,11 +126,6 @@ public class WXMain {
             String uploadResult;
             try {
                 uploadResult = okHttpHelper.getOkHttpUtils().syncPostJson(Params.getBaseUrl() + "classes/WX", object.toString(), Params.head()).body().string();
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 System.out.println(uploadResult);
             } catch (IOException e) {
                 e.printStackTrace();

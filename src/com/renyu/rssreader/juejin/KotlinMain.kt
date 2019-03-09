@@ -9,13 +9,13 @@ import org.json.JSONObject
 
 fun main(args: Array<String>) {
     val okHttpHelper = OKHttpHelper.getInstance()
-    for (page in 0..3) {
+    for (page in 0..5) {
         val url = "https://timeline-merger-ms.juejin.im/v1/get_tag_entry?" +
                 "src=web&" +
                 "uid=57720a530a2b5800581d5a49&" +
-                "device_id=1541690390211&" +
-                "token=eyJhY2Nlc3NfdG9rZW4iOiI1cVdubjNvdk56UW90eG5QIiwicmVmcmVzaF90b2tlbiI6InJwYUtrWGxWTjhRUmsxRUsiLCJ0b2tlbl90eXBlIjoibWFjIiwiZXhwaXJlX2luIjoyNTkyMDAwfQ%3D%3D" +
-                "&tagId=56c40b1d2e958a0059a1b719&" +
+                "device_id=${Params.device_id}&" +
+                "token=${Params.juejinToken}&" +
+                "tagId=56c40b1d2e958a0059a1b719&" +
                 "page=$page&" +
                 "pageSize=20&" +
                 "sort=createdAt"

@@ -11,15 +11,15 @@ import org.jsoup.select.Elements
 const val regEx = "[`~☆★!@#$%^&*()+=|{}':;,\\[\\]》·.<>/?~！@#￥%……（）——+|{}【】‘；：”“’。，、？]"
 
 fun main(args: Array<String>) {
-    val urlList: Array<String> = arrayOf("0659acfdce32","ebc9d2e84214", "38d96caffb2f", "7d70f1739deb", "NEt52a", "58b4c20abf2f", "d1591c322c89", "5139d555c94d", "ddfd0f9bb992", "0dc880a2c73c", "383594e9265f")
-
+    val urlList: Array<String> = arrayOf("0659acfdce32","ebc9d2e84214", "7d70f1739deb", "58b4c20abf2f", "d1591c322c89", "5139d555c94d", "ddfd0f9bb992", "0dc880a2c73c", "383594e9265f")
     for (url in urlList) {
-        val names: MutableList<String> = MutableList(0) {""}
-        val textUrls: MutableList<String> = MutableList(0) {""}
-        val titles: MutableList<String> = MutableList(0) {""}
+        for (i in 1 until 10) {
+            val names: MutableList<String> = MutableList(0) {""}
+            val textUrls: MutableList<String> = MutableList(0) {""}
+            val titles: MutableList<String> = MutableList(0) {""}
 
-        for (i in 1 until 4) {
             val newUrl = "http://www.jianshu.com/c/$url?order_by=added_at&page=$i"
+            print(newUrl)
             val doc: Document = Jsoup.connect(newUrl).get()
             val note_list_element: Elements = doc.getElementsByClass("note-list")
             val note_list_document: Document = Jsoup.parse(note_list_element.toString())
@@ -33,13 +33,13 @@ fun main(args: Array<String>) {
                 val title = title_document.getElementsByClass("title").text()
                 titles.add(title)
             }
-            for (i in 0..9) {
+            for (j in 0 until titles.size) {
                 val listBean: WXBean.ListBean = WXBean.ListBean()
                 listBean.app_msg_ext_info = WXBean.ListBean.AppMsgExtInfoBean()
-                listBean.app_msg_ext_info.title = titles[i]
-                listBean.app_msg_ext_info.author = names[i]
-                listBean.app_msg_ext_info.source_url = textUrls[i]
-                println(titles[i])
+                listBean.app_msg_ext_info.title = titles[j]
+                listBean.app_msg_ext_info.author = names[j]
+                listBean.app_msg_ext_info.source_url = textUrls[j]
+                println(titles[j])
                 if (!checkExists(listBean)) {
                     update(listBean)
                 }
